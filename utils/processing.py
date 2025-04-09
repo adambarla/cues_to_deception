@@ -34,9 +34,8 @@ def process_qualtrics(df: pd.DataFrame, min_duration=None) -> pd.DataFrame:
     for col in df.columns:
         if col in QUESTIONS:
             # Participants answer question "Are they telling the truth?"
-            df[col] = df[col].replace({"Non": False, "Oui": True})
+            df[col] = df[col].replace({"Non": "False", "Oui": "True"})
             df[col] = df[col].astype("category")
-
     return df
 
 
@@ -50,11 +49,12 @@ def _get_score(row: pd.Series) -> float:
     """
     score = 0
     total = row.notna().sum()
-    assert total != 0, "Row has no valid responses"
+
+    assert total == 3,  f"Row {row.name} has {total} valid responses, not 3. Check the data."
     for col in row.index:
-        if row[col] == True and col in TRUE_QUESTIONS:
+        if row[col] == "True" and col in TRUE_QUESTIONS:
             score += 1
-        if row[col] == False and col in FALSE_QUESTIONS:
+        if row[col] == "False" and col in FALSE_QUESTIONS:
             score += 1
     return score / total
 
