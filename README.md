@@ -13,5 +13,12 @@ This repository contains an analysis of responses from [survey](https://unil.qua
     ```bash
     jupyter notebook
     ```
-4. Open the notebook `analysis.ipynb` and run the cells
+4. Download the data as **TSV** from [here](https://unil.qualtrics.com/responses/#/surveys/SV_bpBDplVZyRJpZ0q). 
+   Don't forget to tick **"Export viewing order data for randomized surveys"**, in the advanced options (this is done so we know which group of the cues was shown to the participant). 
+5. Extract the zip file and place the `.tsv`  file in the data folder.
+6. Open the notebook `analysis.ipynb` and change the `data_file` variable to be the name of the `.tsv` file in the `/data` folder.
+7. Run the notebook cells.
 
+# Contributing
+
+Please run `nb-clea clean <notebook>` to clean the notebook before committing. This will remove all output and clear the execution count.
