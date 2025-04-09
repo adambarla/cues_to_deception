@@ -12,6 +12,7 @@ COLUMN_NAME_MAP = {
     "v_12": "q_v_12",
     "v_15": "q_v_15",
     "FL_88_DO": "cue_group",
+    "Duration (in seconds)": "duration",
 }
 
 TRUE_QUESTIONS = [

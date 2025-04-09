@@ -10,11 +10,13 @@ from .constants import (
 )
 
 
-def process_qualtrics(df: pd.DataFrame) -> pd.DataFrame:
+def process_qualtrics(df: pd.DataFrame, min_duration=None) -> pd.DataFrame:
     """
     Process the input from Qualtrics to make it suitable for analysis.
     Args:
         df (pd.DataFrame): The input DataFrame from Qualtrics.
+        min_duration (int, optional): Minimum duration (seconds) for survey completion.
+            Defaults to None, which means no minimum duration.
     Returns:
         pd.DataFrame: The processed DataFrame.
     """
@@ -26,13 +28,16 @@ def process_qualtrics(df: pd.DataFrame) -> pd.DataFrame:
     df = df[df.status == "IP Address"]  # remove preview responses and header rows
     df = df[df.cue_group.notna()]  # remove rows with no cue group
     df.cue_group = df.cue_group.astype("category")  # convert cue group to category
+    df.duration = df.duration.astype("int")  # convert duration to int
+    if min_duration:
+        df = df[df.duration >= min_duration]
     for col in df.columns:
         if col in QUESTIONS:
             # Participants answer question "Are they telling the truth?"
             df[col] = df[col].replace({"Non": False, "Oui": True})
             df[col] = df[col].astype("category")
 
-    return df[QUESTIONS + ["cue_group"]]
+    return df
 
 
 def _get_score(row: pd.Series) -> float:
@@ -68,5 +73,6 @@ def calculate_scores(df: pd.DataFrame) -> pd.DataFrame:
 
     df["group1_score"] = group1.apply(_get_score, axis=1)
     df["group2_score"] = group2.apply(_get_score, axis=1)
+    df["score_diff"] = df["group2_score"] - df["group1_score"]
 
     return df
