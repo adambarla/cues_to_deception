@@ -21,4 +21,4 @@ This repository contains an analysis of responses from [survey](https://unil.qua
 
 # Contributing
 
-Please run `nb-clea clean <notebook>` to clean the notebook before committing. This will remove all output and clear the execution count.
+Please run `nb-clea clean <notebook>` and `black .`  before committing your changes.

@@ -1,6 +1,14 @@
 import pandas as pd
 
-from .constants import FALSE_QUESTIONS, GROUP1_QUESTIONS, GROUP2_QUESTIONS, QUESTIONS, COLUMN_NAME_MAP, TRUE_QUESTIONS
+from .constants import (
+    FALSE_QUESTIONS,
+    GROUP1_QUESTIONS,
+    GROUP2_QUESTIONS,
+    QUESTIONS,
+    COLUMN_NAME_MAP,
+    TRUE_QUESTIONS,
+)
+
 
 def process_qualtrics(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -10,19 +18,22 @@ def process_qualtrics(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: The processed DataFrame.
     """
-    df = df.rename(columns=COLUMN_NAME_MAP) # rename the columns, mistakes in the survey
-    df = df.rename(columns={col: col.lower() for col in df.columns}) 
-    df = df[df.finished == "True"] # remove unfinished responses
-    df = df[df.status == "IP Address"] # remove preview responses and header rows
-    df = df[df.cue_group.notna()] # remove rows with no cue group
-    df.cue_group = df.cue_group.astype("category") # convert cue group to category
+    df = df.rename(
+        columns=COLUMN_NAME_MAP
+    )  # rename the columns, mistakes in the survey
+    df = df.rename(columns={col: col.lower() for col in df.columns})
+    df = df[df.finished == "True"]  # remove unfinished responses
+    df = df[df.status == "IP Address"]  # remove preview responses and header rows
+    df = df[df.cue_group.notna()]  # remove rows with no cue group
+    df.cue_group = df.cue_group.astype("category")  # convert cue group to category
     for col in df.columns:
         if col in QUESTIONS:
-            # Participants answer question "Are they telling the truth?" 
+            # Participants answer question "Are they telling the truth?"
             df[col] = df[col].replace({"Non": False, "Oui": True})
             df[col] = df[col].astype("category")
 
     return df[QUESTIONS + ["cue_group"]]
+
 
 def _get_score(row: pd.Series) -> float:
     """
@@ -38,9 +49,10 @@ def _get_score(row: pd.Series) -> float:
     for col in row.index:
         if row[col] == True and col in TRUE_QUESTIONS:
             score += 1
-        if row [col] == False and col in FALSE_QUESTIONS: 
+        if row[col] == False and col in FALSE_QUESTIONS:
             score += 1
-    return score /  total
+    return score / total
+
 
 def calculate_scores(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -48,7 +60,7 @@ def calculate_scores(df: pd.DataFrame) -> pd.DataFrame:
     Args:
         df (pd.DataFrame): The input DataFrame from Qualtrics.
     Returns:
-        pd.DataFrame: The DataFrame with scores for each group. 
+        pd.DataFrame: The DataFrame with scores for each group.
             With two additional columns for both groups.
     """
     group1 = df[GROUP1_QUESTIONS]

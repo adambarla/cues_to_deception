@@ -7,3 +7,4 @@ scipy==1.15.2
 seaborn==0.13.2
 statsmodels==0.14.4
 nb-clean==4.0.1
+black==25.1.0
