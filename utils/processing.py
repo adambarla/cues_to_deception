@@ -50,7 +50,9 @@ def _get_score(row: pd.Series) -> float:
     score = 0
     total = row.notna().sum()
 
-    assert total == 3,  f"Row {row.name} has {total} valid responses, not 3. Check the data."
+    assert (
+        total == 3
+    ), f"Row {row.name} has {total} valid responses, not 3. Check the data."
     for col in row.index:
         if row[col] == "True" and col in TRUE_QUESTIONS:
             score += 1
@@ -76,3 +78,17 @@ def calculate_scores(df: pd.DataFrame) -> pd.DataFrame:
     df["score_diff"] = df["group2_score"] - df["group1_score"]
 
     return df
+
+
+def split_control(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Split the DataFrame into two DataFrames for each group and concatenate them.
+    """
+    df_g1 = df.rename(columns={"group1_score": "score"})[["score", "cue_group"]]
+    df_g1.cue_group = "Control"
+    df_g2 = df.rename(columns={"group2_score": "score"})[["score", "cue_group"]]
+    df_g = pd.concat([df_g1, df_g2], axis=0)
+    df_g.cue_group = df_g.cue_group.astype(
+        pd.CategoricalDtype(categories=["Control", "BadCues", "GoodCues"])
+    )
+    return df_g

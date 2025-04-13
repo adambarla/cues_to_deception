@@ -1,6 +1,7 @@
 from .processing import (
     process_qualtrics,
     calculate_scores,
+    split_control,
 )
 from .constants import (
     FALSE_QUESTIONS,
