@@ -10,3 +10,6 @@ from .constants import (
     GROUP1_QUESTIONS,
     GROUP2_QUESTIONS,
 )
+from .bootstraping import (
+    bootstrap,
+)
