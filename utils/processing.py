@@ -24,9 +24,17 @@ def process_qualtrics(df: pd.DataFrame, min_duration=None) -> pd.DataFrame:
         columns=COLUMN_NAME_MAP
     )  # rename the columns, mistakes in the survey
     df = df.rename(columns={col: col.lower() for col in df.columns})
+    length = len(df)
+    print(f"Number of answers: {length}")
     df = df[df.finished == "True"]  # remove unfinished responses
+    print(f"    Didn't finish: {length - len(df)}")
+    length = len(df)
     df = df[df.status == "IP Address"]  # remove preview responses and header rows
+    print(f"     Test answers: {length - len(df)}")
+    length = len(df)
     df = df[df.cue_group.notna()]  # remove rows with no cue group
+    print(f"Missing cue group: {length - len(df)}")
+    print(f"After filtering, we have {len(df)} participants.")
     df.cue_group = df.cue_group.astype("category")  # convert cue group to category
     df.duration = df.duration.astype("int")  # convert duration to int
     if min_duration:
