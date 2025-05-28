@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 import statsmodels.formula.api as sm
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from utils.plotting import plot_bootstrap_distribution
