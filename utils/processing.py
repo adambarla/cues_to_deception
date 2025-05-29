@@ -92,9 +92,9 @@ def split_control(df: pd.DataFrame) -> pd.DataFrame:
     """
     Split the DataFrame into two DataFrames for each group and concatenate them.
     """
-    df_g1 = df.rename(columns={"group1_score": "score"})[["score", "cue_group"]]
+    df_g1 = df.rename(columns={"group1_score": "score"})
     df_g1.cue_group = "Control"
-    df_g2 = df.rename(columns={"group2_score": "score"})[["score", "cue_group"]]
+    df_g2 = df.rename(columns={"group2_score": "score"})
     df_g = pd.concat([df_g1, df_g2], axis=0)
     df_g.cue_group = df_g.cue_group.astype(
         pd.CategoricalDtype(categories=["Control", "BadCues", "GoodCues"])
