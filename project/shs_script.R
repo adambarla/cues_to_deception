@@ -1,6 +1,7 @@
 library(readr)
 library(ggplot2)
 
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 data <- read_csv("processed_data.csv")
 
 #### descriptive analysis ####
@@ -38,6 +39,9 @@ table(data$difference, data$cue_group)
 data$cue_group <- factor(data$cue_group,
                          levels = c("BadCues", "GoodCues"),
                          labels = c("bad cues", "good cues"))
+
+
+
 
 ggplot(data, aes(x = factor(difference), fill = cue_group)) +
   geom_bar( alpha = 1, position = "dodge") +
@@ -120,3 +124,29 @@ good_cues_df <- data.frame(
   group = c(rep("Before cues", sum(data$cue_group=="good cues")), rep("After cues", sum(data$cue_group=="good cues")))
 )
 t.test(y ~ group, data = good_cues_df)
+
+
+
+### --- TEST 1 ---
+# Do participants given GOOD cues show significantly greater improvement
+# in lie detection performance than those given BAD cues?
+# We test whether the average score change (difference) is higher for the "good cues" group.
+
+t.test(
+  difference ~ cue_group,
+  data = data,
+  alternative = "greater"  # one-sided test because we expect good cues > bad cues
+)
+
+### --- TEST 2 ---
+# Does giving any kind of cues (good or bad) influence performance overall?
+# This ignores the distinction between good and bad cues.
+# We compare pre- and post-cue performance for all participants combined.
+
+t.test(
+  x = data$group1_score,     # performance before cues
+  y = data$group2_score,     # performance after cues
+  paired = TRUE,             # same participants tested before and after
+  alternative = "two.sided"  # we test for any change (increase or decrease)
+)
+
