@@ -1,5 +1,6 @@
 library(readr)
 library(ggplot2)
+library(tidyverse)
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 data <- read_csv("processed_data.csv")
@@ -56,6 +57,12 @@ ggplot(data, aes(x = factor(difference), fill = cue_group)) +
 
 ### random bullshit 
 big_data <- read_csv("processed_data_all_columns.csv")
+
+## Écart-type de l'âge
+sd(big_data$age_1, na.rm = TRUE)
+
+## Âge minimum et maximum
+range(big_data$age_1, na.rm = TRUE)
 
 ## nationality
 tapply(big_data$group1_score, big_data$nationality, mean)
@@ -150,3 +157,62 @@ t.test(
   alternative = "two.sided"  # we test for any change (increase or decrease)
 )
 
+
+
+library(pwr)
+
+# Power analysis pour ANOVA entre-groupes
+pwr.anova.test(k = 2,          # 2 groupes (GoodCues, BadCues)
+               f = 0.20,       # small-medium effect size
+               sig.level = 0.05,
+               power = 0.80)
+
+
+
+
+
+
+
+
+# Read your data
+data <- read.csv("processed_data_all_columns.csv") 
+
+# Fonction pour parser les strings de vidéos en liste
+parse_videos <- function(video_column) {
+  # Split at '|'
+  videos <- str_split(video_column, "\\|", simplify = FALSE)
+  # Flatten list
+  videos <- unlist(videos)
+  # Remove empty values
+  videos <- videos[videos != ""]
+  return(videos)
+}
+
+# Extraire toutes les vidéos g1 (pré phase)
+videos_g1 <- unlist(lapply(data$fl_86_do, parse_videos))
+# Extraire toutes les vidéos g2 (post phase)
+videos_g2 <- unlist(lapply(data$fl_87_do, parse_videos))
+
+# Compter les vidéos distinctes
+unique_videos_g1 <- unique(videos_g1)
+unique_videos_g2 <- unique(videos_g2)
+
+# Compter truths vs lies (d = lie, v = truth)
+count_truth_lie <- function(videos) {
+  n_truth <- sum(str_detect(videos, "_v_"))
+  n_lie   <- sum(str_detect(videos, "_d_"))
+  return(c(truth = n_truth, lie = n_lie))
+}
+
+# Résultats
+cat("SET 1 (PRE):\n")
+cat("Number of unique videos: ", length(unique_videos_g1), "\n")
+cat("Unique videos: ", paste(unique_videos_g1, collapse = ", "), "\n")
+cat("Count truths vs lies: \n")
+print(count_truth_lie(videos_g1))
+
+cat("\nSET 2 (POST):\n")
+cat("Number of unique videos: ", length(unique_videos_g2), "\n")
+cat("Unique videos: ", paste(unique_videos_g2, collapse = ", "), "\n")
+cat("Count truths vs lies: \n")
+print(count_truth_lie(videos_g2))
